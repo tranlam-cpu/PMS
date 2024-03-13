@@ -9,26 +9,26 @@ export class CategoryController {
     constructor(private categoryService: CategoryService) {}
 
     @Get()
-    getAllProduct(){
+    getAllCategory(){
         return this.categoryService.getAllCategory()
     }
 
     @Get('/:id')
-    getProductById(
+    getCategoryById(
         @Param('id') id: string,
     ){
         return this.categoryService.getCategoryById(id)
     }
 
     @Post()
-    createProduct(
+    createCategory(
         @Body() dto: createCategoryDto
     ){
         return this.categoryService.createCategory(dto)
     }
 
     @Patch('/:id')
-    updateProduct(
+    updateCategory(
         @Param('id') id: string,
         @Body() dto: editcategoryDto
     ){
@@ -36,7 +36,7 @@ export class CategoryController {
     }
 
     @Delete('/:id')
-    deleteProduct(
+    deleteCategory(
         @Param('id') id: string,
     ){
         return this.categoryService.deleteCategory(id)

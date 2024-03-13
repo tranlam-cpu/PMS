@@ -37,23 +37,32 @@ model Product{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String?
   description String?
-  price Float?
-  quantity Int?
+  image String?
+  price Float? @default(0.0)
+  quantity Int? @default(0)
   category Product_Category @relation(fields: [categoryId], references: [id])
   categoryId String @db.ObjectId
   rentalId String[] @db.ObjectId
-  raltals  Rental[] @relation(fields: [rentalId], references: [id])
+  rentals  Rental[] @relation(fields: [rentalId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+
+enum RentalStatus {
+  Active
+  Inactive
+  Notified
+  Overdue 
+}
+ // Quá hạn - overdue
 model Rental{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   start_date DateTime?
   end_date DateTime?
-  rental_duration Int?
-  rental_fee Float?
-  status String?
+  rental_duration Int? @default(0)
+  rental_fee Float? @default(0.0)
+  status RentalStatus @default(Active)
   productId String[] @db.ObjectId
   products Product[] @relation(fields: [productId], references: [id])
   rental_history Rental_history?
