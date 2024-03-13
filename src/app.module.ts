@@ -1,14 +1,18 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
-
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AuthModule } from './auth/auth.module';
-import { ProductController } from './product/product.controller';
-import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
-import { CategoryController } from './category/category.controller';
 import { CategoryModule } from './category/category.module';
-import { CategoryService } from './category/category.service';
+import { AwsModule } from './awsS3.storage.ts/aws.module';
+import { RentalModule } from './rental/rental.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BullModule } from '@nestjs/bull';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { config } from 'process';
+import { join } from 'path';
 
 
 
@@ -18,12 +22,46 @@ import { CategoryService } from './category/category.service';
       isGlobal:true,
       envFilePath: '.dev.env',
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: Number(configService.get('REDIS_PORT')),
+          password: configService.get('REDIS_PASSWORD'),
+          username: configService.get('REDIS_USERNAME'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('MAIL_HOST'),
+          port: configService.get('MAIL_PORT'),
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASSWORD'),
+          },
+        },
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new HandlebarsAdapter(),
+        },
+      }),
+      inject: [ConfigService],   
+    }),
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     PrismaModule,
+    AwsModule,
     AuthModule,
     ProductModule,
     CategoryModule,
+    RentalModule,
   ],
-  controllers: [ProductController, CategoryController],
-  providers: [ProductService, CategoryService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
