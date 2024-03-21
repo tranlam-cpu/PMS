@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { CategoryService } from './category.service';
 import { createCategoryDto, editcategoryDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
+import { deleteManyCategoryDto } from './dto/delete-many-category.dto';
 
 @UseGuards(JwtGuard)
 @Controller('category')
@@ -27,6 +28,8 @@ export class CategoryController {
         return this.categoryService.createCategory(dto)
     }
 
+    
+
     @Patch('/:id')
     updateCategory(
         @Param('id') id: string,
@@ -40,5 +43,13 @@ export class CategoryController {
         @Param('id') id: string,
     ){
         return this.categoryService.deleteCategory(id)
+    }
+
+
+    @Post('/delete-many')
+    deleteManyCategory(
+        @Body() arrayId: deleteManyCategoryDto
+    ){
+        return this.categoryService.deleteManyCategory(arrayId)
     }
 }

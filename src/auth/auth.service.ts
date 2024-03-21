@@ -79,7 +79,7 @@ export class AuthService {
 
 
 
-    async signToken(userId:String, email:string):Promise<{access_token:string}>{
+    async signToken(userId:String, email:string):Promise<{exp:Date,email:string,access_token:string}>{
         const payload={
             sub:userId,
             email
@@ -94,8 +94,13 @@ export class AuthService {
             secret: secret
         })
 
+         // Calculate the expiration time
+        const exp=this.jwt.decode(token).exp;
+
         return {
+            email,
             access_token: token,
+            exp
         }
     }
 }
