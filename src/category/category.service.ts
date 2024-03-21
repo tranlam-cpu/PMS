@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createCategoryDto, editcategoryDto } from './dto';
+import { deleteManyCategoryDto } from './dto/delete-many-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -51,6 +52,20 @@ export class CategoryService {
             return await this.prisma.product_Category.delete({
                 where:{
                     id: id
+                }
+            })
+        }catch(e){
+            throw new ForbiddenException(e)
+        }
+    }
+
+    async deleteManyCategory(arrayId: deleteManyCategoryDto){
+        try{
+            return await this.prisma.product_Category.deleteMany({
+                where:{
+                    id: {
+                        in: arrayId.ids
+                    }
                 }
             })
         }catch(e){

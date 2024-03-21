@@ -33,7 +33,7 @@ export class ScheduleService{
         await this.mailService.sendMail({
             ...body,
             from: this.configService.get('MAIL_ADMIN'),
-            to: 'lamlife113520@gmail.com',
+            to: body.email,
             subject: 'Thông báo thời gian thuê sắp đến hạn!!',
             template: 'rental',
             context: {
